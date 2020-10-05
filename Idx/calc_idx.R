@@ -6,11 +6,11 @@ library(readxl)
 
 ##### IMPORTANDO OS DADOS E CONFERINDO A PLANILHA dados_Idx --------------------------
 
-idx <- read_excel("dados_Idx.xlsx")
+idx <- read_excel("Idx/dados_Idx.xlsx")
 
-pesos_idx <- read_csv2("pesos.csv")
+pesos_idx <- read_csv2("Idx/pesos.csv")
 
-source("conferir_dados_idx.R", encoding = "UTF-8")
+source("Idx/conferir_dados_idx.R", encoding = "UTF-8")
 
 
 
@@ -227,14 +227,15 @@ ind_minimo_per_capita <- pop_selecionada / sum(pop_selecionada) * 100
 
 ind_final <- round(((ind_minimo_per_capita * 0.1 / 100) + consolidado2_art1), 8)
 
-ind_final <- ind_final + ((100 - sum(ind_final)) / 853)
+ind_final_acertado <- ind_final + ((100 - sum(ind_final)) / 853)
 
 
 idx <- idx %>% 
   mutate(
     "ICMS Solidário" = ICMS_Solidario,
     "Índice Mínimo per capita" = ind_minimo_per_capita,
-    "Índice de participação" = ind_final
+    "Índice de participação a acertar" = ind_final,
+    "Índice de participação" = ind_final_acertado
   )
 
 
@@ -242,9 +243,9 @@ idx <- idx %>%
 
 ##### EXPORTANDO OS RESULTADOS, INCLUINDO A PLANILHA PARA O SITE ---------------------
 
-source("idx_site.R", encoding = "UTF-8")
+source("Idx/idx_site.R", encoding = "UTF-8")
 
-write.csv2(idx, "Idx_resultado.csv", row.names = F)
+write.csv2(idx, "Idx/Idx_resultado.csv", row.names = F)
 
 
 

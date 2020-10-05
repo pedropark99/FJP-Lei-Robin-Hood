@@ -25,7 +25,7 @@ if(!teste){
 
 ##### CONFERINDO OS CÓDIGOS DO IBGE2 -------------------------------------
 
-codigos_IBGE2 <- suppressMessages(read_csv2("codigos.csv")[["IBGE2"]])
+codigos_IBGE2 <- suppressMessages(read_csv2("Idx/codigos.csv")[["IBGE2"]])
 
 teste <- all(idx$IBGE2 %in% codigos_IBGE2)
 

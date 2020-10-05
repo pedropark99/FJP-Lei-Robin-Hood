@@ -9,16 +9,16 @@ colunas <- c("População dos 50 + Populosos", "Área Geográfica", "Educação"
 
 
 idx_formatado <- idx %>% 
+  select(Ano, `Mês`, IBGE2, all_of(colunas)) %>% 
   pivot_longer(
     cols = all_of(colunas),
     names_to = "Critério",
     values_to = "Valor"
-  ) %>% 
-  select(Ano, `Mês`, IBGE2, Critério, Valor)
+  )
 
 
 codigos_site <- read_csv2(
-  "Cod_indices_site.csv",
+  "Idx/Cod_indices_site.csv",
   locale = locale(encoding = "Latin1")
   )
 
@@ -31,4 +31,9 @@ idx_formatado <- idx_formatado %>%
   select(Ano, `Mês`, IBGE2, `Cód índ`, Valor, `Critério`)
 
 
-write.csv2(idx_formatado, "Idx_para_site.csv", row.names = F)
+
+
+write.csv2(idx_formatado, "Idx/Idx_para_site.csv", row.names = F)
+
+
+
