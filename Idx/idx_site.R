@@ -33,6 +33,31 @@ idx_formatado <- idx_formatado %>%
 
 
 
+datas <- tribble(
+  ~Mês, ~Número,
+  "Janeiro", 1,
+  "Fevereiro", 2,
+  "Março", 3,
+  "Abril", 4,
+  "Maio", 5,
+  "Junho", 6,
+  "Julho", 7,
+  "Agosto", 8,
+  "Setembro", 9,
+  "Outubro", 10,
+  "Novembro", 11,
+  "Dezembro", 12
+)
+
+mes_atual <- unique(idx$`Mês`)
+
+numero_mes_atual <- datas$Número[datas$Mês == mes_atual]
+
+idx_formatado$Mês <- numero_mes_atual
+
+
+
+
 write.csv2(idx_formatado, "Idx/Idx_para_site.csv", row.names = F)
 
 
