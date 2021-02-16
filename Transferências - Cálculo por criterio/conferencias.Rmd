@@ -1,0 +1,169 @@
+---
+title: "Documentação Script Transferências"
+author: "Pedro Duarte Faria"
+date: "21/09/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Conferências aplicadas sobre as Portarias
+## Portarias de ICMS:
+A primeira parte de conferências do script, irá conferir as configurações da planilha que contém a Portaria de ICMS, aplicando os seguintes passos:
+
+  1) **Localizar as colunas de bruto:** o script vai encontrar todas as colunas de transferências brutas definidas na portaria, através do nome delas. Essa é provavelmente uma das partes mais sensíveis e essenciais do script. Por isso, o script foi desenvolvido de forma bem restrita, portanto, qualquer modificação na forma padrão como essas colunas são nomeadas será detectada. Caso ele não encontre alguma coluna de brutos, ele irá lhe retornar um erro indicando o formato correto de como essas colunas deveriam ser nomeadas, para que você faça os ajustes. 
+  
+  2) **Comparar o número de colunas de bruto com o número de arquivos de Idx na pasta:** na prática, você precisa ter os arquivos de Idx de todos os meses utilizados na portaria. Estes meses, são definidos nas colunas de trasnferências brutas presentes na portaria de ICMS. Logo, na prática, se você possui três colunas de trasnferências brutas na portaria, você precisa ter três Idx's diferentes na pasta.
+  
+  3) **Conferir os nomes das demais colunas:** após encontrar as colunas de transferências brutas, o script irá confirmar se os nomes das demais colunas estão corretos. Caso alguma coluna esteja fora do formato, um erro será retornando pedindo que ajuste essa coluna.
+  
+  4) **Conferir o número de linhas:**  o script vai conferir se a portaria de ICMS possui 853 linhas, caso isso não se confirme, um erro será acionado, pedindo por ajustes.
+  
+  
+5) **Conferir os tipos de dados das colunas:** o script também vai conferir se os dados contidos nas colunas essenciais da portaria de ICMS, estão sendo interpretados corretamente. Essas colunas essenciais são: todas as colunas contendo transferências brutas, Ano, SEF, FUNDEB e Compensações. Caso alguma dessas colunas não esteja sendo interpretada como números, o script irá tentar transformar essas colunas para colunas númericas. É importante frisar, que caso ele não consiga transformar esses dados para números, é sinal de que a portaria de ICMS está muito mal formatada, e é certo que outros erros em outras áreas do script serão acionadas, impedindo que você prossiga com o cálculo. Por isso, sempre garanta que os seus dados estejam formatados de uma forma minimamente decente (isso também vale para os arquivos de Idx). Jamais misture letras e números em uma mesma coluna. Se você deseja indicar que um município não possui um valor definido na portaria de um mês, preencha a coluna com um 0 (zero), ou então deixe a linha em branco, e não com um "x", ou algum outro caractere.
+  
+  
+## Portaria de IPI
+
+A portaria de IPI é mais simples, e portanto, exige menos conferências do que a de ICMS.
+
+1) **Conferir os nomes das colunas:** o script irá apenas conferir os nomes de todas as colunas do arquivo, sendo este o único controle que será aplicado sobre a portaria de IPI.
+
+2) **Conferir o número de linhas:**  assim como na portaria de ICMS, o script também irá conferir se a portaria de IPI possui 853 linhas, caso isso não se confirme, um erro será acionado, pedindo por ajustes.
+
+3) **Conferir os tipos de dados das colunas:** assim como na portaria de ICMS, o script também irá conferir se os dados contidos nas colunas essenciais da portaria de IPI, estão sendo interpretados corretamente. Essas colunas essenciais são: Bruto, Ano, SEF, PASEP e FUNDEB. Caso alguma dessas colunas não esteja sendo interpretada como números, o script irá tentar transformar essas colunas para colunas numéricas. É importante frisar, que caso ele não consiga transformar esses dados para números, é sinal de que a portaria de IPI está muito mal formatada, e é certo que outros erros em outras áreas do script serão acionadas, impedindo que você prossiga com o cálculo. Por isso, sempre garanta que os seus dados estejam formatados de uma forma minimamente decente (isso também vale para os arquivos de Idx). Jamais misture letras e números em uma mesma coluna. Se você deseja indicar que um município não possui um valor definido na portaria de um mês, preencha a coluna com um 0 (zero), ou então deixe a linha em branco e não com um "x", ou algum outro caractere.
+
+## Testando a igualdade entre as portarias
+
+Já ocorreu em alguns meses, dos índices de participação utilizados nas portarias serem diferentes uns dos outros. Ou seja, é como se no mês de Junho de 2020, a portaria de ICMS utilizasse os índices de Junho de 2020, e a portaria de IPI, utilizasse os índices de Maio de 2020. 
+
+Isso é raro de ocorrer, mas como já houve casos assim, o script irá comparar os índices de participação em cada portaria. Caso esses índices apresentem alguma diferença, indicando que são índices de meses diferentes, o script irá lhe retornar um aviso, mas não irá impedir que o script continue com os cálculos.
+
+Quando houver uma diferença entre esses índices, é muito provável que o script irá utilizar ao final, o método alternativo de cálculo para acertar os valores transferidos. Por isso o script apenas irá te alertar dessa diferença, pois essa diferença **pode** representar um erro grave da SEF, mas um erro tal que não nos impede de calcularmos os valores transferidos que estão definidos na portaria.
+
+
+# Conferências aplicadas sobre os arquivos de Idx
+
+Ao todo, cinco conferências serão aplicadas sobre os arquivos de Idx. Entretanto, não será aplicado alguma conferência sobre como as colunas contendo índices de participação de todos os critérios, estão sendo interepretadas. Ou seja, o script não irá conferir se as colunas contendo esses índices, estão sendo interpretadas como colunas numéricas. Este teste não foi incluído para os arquivos de Idx, pelo fato dos scripts já conterem muitos mecanismos de conferência, e por ser algo de nossa inteira responsabilidade como analistas, de garantir a correta formatação de nossos dados, sendo esta uma atividade básica de nosso trabalho. Se os seus dados estão formatados de uma forma minimamente decente, o R irá interpretar suas colunas numéricas corretamente.
+
+Mas caso algum problema na formatação ocorra, é possível que alguma dessas colunas seja interpretada pelo R, como uma coluna de texto. Isso ocorre sempre que você mistura dados de vários tipos em uma mesma coluna. Ou seja, se isto está ocorrendo, é porque o valor de pelo menos uma linha dessa coluna numérica, está sendo interpretado como um outro tipo de dado, como um texto, ou como uma data. O Excel pode interpretar os seus números como textos, mesmo que eles aparentem estar corretamente formatados. A principal forma de detectar isso, é olhar para o alinhamento dos dados. No Excel, todo dado numérico é alinhado à direita. Já textos, são alinhados à esquerda. 
+
+1) **Conferir os nomes de todas as colunas:** os nomes de todas as colunas de cada planilha de Idx serão conferidos. Caso haja alguma coluna com o nome fora do padrão, um erro será retornado, indicando em qual planilha o erro ocorre, e quais as colunas que precisam de ajuste.
+
+2) **Conferir se os meses definidos nos arquivos de Idx, conferem com os meses na portaria de ICMS:** o script irá comparar os meses e anos definidos nas colunas "Ano" e "Mês" de cada arquivo de Idx, com os meses definidos nos nomes das colunas de transferências brutas de portaria de ICMS. Caso ele encontre algum Mês-Ano que se encontra definido na portaria de ICMS, mas não se encontra definido em algum arquivo de Idx, um erro será levantado.
+
+
+3) **Conferir o somatório de todas as colunas:** o script também irá conferir em todos os Idx, se o somatório de todas as colunas (que contém índices de algum critério) estão fechando em 100 a 8 casas decimais. Caso o somatório de alguma coluna, em algum Idx não some 100%, o script irá lhe retornar um erro indicando em quais colunas isso ocorre, e também irá lhe mostrar qual o valor tota daquela coluna logo abaixo de seu nome. Normalmente, são apenas as colunas referentes aos sub-critérios de Meio Ambiente que não somam 100%, pois elas foram calculadas de forma a somarem 1, portanto, você normalmente terá apenas o trabalho de atualizar os valores na planilha de Idx, multiplicando essas colunas por 100.
+
+
+4) **Conferir se os códigos de IBGE2 de cada planilha de Idx batem com os verdadeiros:** o script também irá se preocupar em conferir se os códigos em cada planilha de Idx que estão alocados na coluna chamada IBGE2, batem com os códigos do IBGE de até quatro dígitos (10-7220). Esses códigos seram utilizados ao longo de todo o script para fazer o pareamento e a ordenação dos dados. Logo, caso algum desses códigos esteja incorreto, o script irá te alertar disso. O mais provável, é que esse erro será levantado sempre que você trocar acidentalmente os nomes das colunas que contém os códigos do IBGE (códigos de até quatro e códigos de seis dígitos).
+
+5) **Conferir o número de linhas de cada arquivo de Idx:** essa é uma forma de conferir se todas planilhas de Idx possuem 853 linhas. Isso não só garante que as informações de todos os municípios de Minas Gerais, estão sendo descritas nessas planilhas. Mas também alerta para possíveis erros na hora de preparar os arquivos de Idx para o cálculo. Por exemplo, é possível que durante esse processo de preparação, o responsável (por falta de atenção) acabe copiando e colando não só os índices, mas também os totais de cada coluna, gerando uma tabela de 854 linhas. Da mesma forma, é possível que ele esqueça de algumas linhas, gerando assim uma tabela com menos de 853 linhas. Em ambos os caso, um erro será levantado, indicando que pelo menos um dos arquivos de Idx, não possui 853 linhas.
+
+# Método de cálculo principal
+
+O script possui dois métodos de cálculo diferentes para se chegar aos valores transferidos aos municípios: o método principal, e um método alternativo. O método principal de cálculo, envolve quatro funções, sendo elas: `calc_ICMS()` e `calc_IPI()`; além de `calc_novos_indices()`; e `ajuste()`.
+
+A ideia principal deste método, é calcular os valores brutos de ICMS transferidos para cada município, separados para cada critério, e para cada mês definido na portaria de ICMS (ou seja, os meses definidos nas colunas de transferências brutas que estão presentes na portaria de ICMS), através da função `calc_ICMS()`. 
+
+Caso algum mês necessite dos ajustes definidos pelas funções `calc_novos_indices()` e `ajuste()`, essas funções entrarão em ação para realizar tais ajustes. Após isso, caso algum ajuste tenha sido feito, a função `calc_ICMS()` será aplicada novamente sobre esses valores que foram ajustados pelas funções `calc_novos_indices()` e `ajuste()`, de forma a recalcular os valores de ICMS, agora considerando-se os devidos ajustes. 
+
+Após o script ter conferido a necessidade desses ajustes, e aplicá-los caso tenha sido necessário, os valores de ICMS cada mês, serão somados para se chegar ao Valor Bruto Total de cada município, separados por cada critério. 
+
+Ou seja, se em uma portaria de ICMS temos três colunas contendo meses de valores brutos de ICMS, o script irá gerar três planilhas diferentes para cada mês, contendo os valores brutos transferidos naquele mês, para cada município separados para cada critério. Em seguida, essas três planilhas serão somadas, para gerar uma única planilha contendo portanto, o Valor Bruto Total de cada município, separados por cada critério da Lei.
+
+Após esses passos, o script irá extrair 80% desses valores transferidos, chegando assim ao Valor Líquido Total de ICMS para cada município, separados por cada critério. Até aí, a última coisa que falta para se chegar aos valores líquidos totais transferidos segundo a Lei, é somar esses valores líquidos de ICMS, aos valores líquidos de IPI. Por isso a próxima coisa que o script irá fazer será calcular os valores de IPI, através da função `calc_IPI()`, seguindo exatamente a mesma metodologia aplicada sobre os valores de ICMS Bruto.
+
+Após calculados os Valores Líquidos Totais de IPI para cada município, separados por cada critério, esses valores são somados aos Valores Líquidos Totais de ICMS, chegando assim aos valores finais, que indicam quanto foi transferido para cada município, segundo a Lei Robin Hood. Por último, um teste será aplicado sobre esses valores, para descobrir se esses valores calculados pelo método principal, já são próximos dos valores definidos na portaria de ICMS. Caso o valor de algum município, se desvie (em valores absolutos) de 2 reais em relação ao seu valor correspondente na portaria, o método alternativo de cálculo será aplicado.
+
+
+
+
+
+## Função `calc_ICMS()`
+
+O script irá calcular antes de `calc_ICMS()`, o valor total de ICMS Bruto para cada mês definido na portaria de ICMS. Ou seja, ele irá calcular o total de cada coluna de transferências brutas da portaria de ICMS. Em seguida, ele irá aplicar a participação de cada critério sobre este total, para se chegar ao ICMS Bruto Total de cada critério da Lei que foi distribuído em cada mês da portaria.
+
+Após esses passos, tudo o que a função `calc_ICMS()` faz, é ir em cada planilha de Idx, e pegar os índices de participação em cada critério, e multiplicar pelo valor total de ICMS Bruto de cada critério. Ou seja, considerando os seguintes parâmetros: Índice de participação ($I$) do critério $i$, do município $j$, no mês $m$; Total de ICMS Bruto ($TICMS$) do critério $i$, no mês $m$. A função `calc_ICMS()` irá utilizar a seguinte fórmula para calcular o Valor Bruto de ICMS ($ICMS$) transferido ao município $j$, segundo o critério $i$ e o mês $m$.
+
+$$I_{ijm} \times TICMS_{im} = ICMS_{ijm}$$
+
+É possível que em certas portarias, essa função já seja suficiente para calcular os valores brutos de ICMS para cada mês. Isso irá depender basicamente se em alguma das colunas de transferências brutas, algum município (ou vários municípios) recebeu $0 reais. Mas caso algum mês definido na portaria de ICMS, necessitar de algum ajuste, as funções `calc_novos_indices()` e `ajuste()` serão acionadas.
+
+
+## Função `calc_IPI()`
+
+A função `calc_IPI()` vai aplicar exatamente o mesmo cálculo que `calc_ICMS()`, a diferença, é que ao invés de utilizar o Total de ICMS Bruto ($TICMS$), a função irá utilizar o Total de IPI Líquido ($TIPI$), chegando a fórmula de cálculo abaixo. Considerando os seguintes parâmetros: Índice de participação ($I$) do critério $i$, do município $j$, no mês $m$; Total de IPI Líquido ($TIPI$) do critério $i$, no mês $m$. Portanto, a função `calc_IPI()` irá utilizar a seguinte fórmula para calcular o Valor Líquido de IPI ($IPI$) transferido ao município $j$, segundo o critério $i$ e o mês $m$.
+
+$$I_{ijm} \times TIPI_{im} = IPI_{ijm}$$
+
+
+Raramente essa metodologia não é suficiente para calcular os valores de IPI Líquido. Pois em geral, todos os municípios recebem algum valor advindo do IPI, logo, não há a necessidade de nenhum ajuste nos índices de participação desses municípios segundo o critério de que pelo menos um município tenha recebido $0 reais. Mesmo assim, é possível, que os índices utilizados pela SEF para repartir o total de IPI líquido, seja diferente dos índices definidos no Idx. Neste caso, é praticamente certo, que o método alternativo de cálculo será utilizado, e neste método, a função `calc_novos_indices()` irá recalcular os índices de participação na hora de calcular os valores de IPI.
+
+
+## Função `calc_novos_indices()`
+
+Há meses definidos (especialmente os primeiros meses da portaria) nas colunas de transferências brutas da portaria de ICMS, em que apenas um grupo muito pequeno de municípios recebem algum valor bruto. Neste caso, precisamos ajustar os índices de participação de todos os critérios, para todos os municípios para aquele mês. Em outros palavras, precisamos ajustar todo o Idx referente ao mês em que isso ocorre.
+
+O motivo é simples, se um município X possui um índice de 0,35% para o critério de Meio Ambiente, no Idx do mês de Janeiro, mas não recebeu nenhum valor bruto para esse mês, segundo a portaria de ICMS de Janeiro, ele recebeu na verdade 0% do total de ICMS Bruto. Por isso, o índice dele utilizado no cálculo dos valores transferidos, deveria ser na verdade 0% e não 0,35%. A função `calc_novos_indices()` fica responsável por recalcular os índices de participação final dos municípios para esses meses, e a função `ajuste()` fica responsável por ajustar os índices de participação de cada critério, de acordo com os índices de participação final calculados por `calc_novos_indices()`.
+
+Da mesma forma em que temos a função `calc_ICMS()` e `calc_IPI()`, temos também no script, as funções `calc_novos_indices_ICMS()` e `calc_novos_indices_IPI()`. A única diferença entre essas funções, é que `calc_novos_indices_ICMS()` irá utilizar o Valor Total Bruto de ICMS ($TICMS$) para calcular os novos índices de participação final, e a função `calc_novos_indices_IPI()`, irá utilizar o Valor Total Líquido de IPI ($TIPI$) para calcular tais índices.
+
+A função `calc_novos_indices_IPI()` só é utilizada no método alternativo de cálculo, pois neste método estamos basicamente recalculando todo o Idx, tanto no instante em que estamos calculando os valores de ICMS, quanto no momento em que calculamos os valores de IPI. No método principal de cálculo, esse ajuste nos índices, só é realizado quando calculamos os valores de ICMS, e apenas caso algum Idx referente a um mês necessite de tal ajuste. Ou seja, é possível que em algumas portarias, todos os municípios tenham recebido algum valor em todos os meses definidos nas colunas de transferências brutas. E a menos que esses valores da portaria não tenham seguido os índices de participação final definidos do Idx, é muito provável que o método principal de cálculo será suficiente para calcular os valores de ICMS transferidos.
+
+
+Enfim, o que a função `calc_novos_indices_ICMS()` faz, é: em cada mês $m$ que necessita de tal ajuste, a função irá pegar o valor bruto de ICMS transferido ($VICMSt$) para o município $j$ (valor esse que está definido na coluna de transferências brutas do mês $m$ na portaria de ICMS), e dividir pelo Valor Total Bruto de ICMS ($TICMS$) desse mesmo mês, de forma a retornar a participação deste município ($Ip$), sobre o Valor Total Bruto de ICMS ($TICMS$) do mês $m$ na portaria de ICMS. Esta participação substitui o Índice de participação acertado do município no Idx, pois ele indica qual foi de fato o índice de participação final utilizado pela SEF para repartir o total de ICMS ao longo dos municípios.
+
+$$VICMSt_{jm} \times 100/TIPI_m = Ip_{jm}$$
+
+Logo, seguindo o mesmo raciocínio, a função `calc_novos_indices_IPI()` irá seguir as fórmulas abaixo para calcular o índice de participação final de cada município $j$ no mês $m$. A função pega o valor de IPI líquido transferido ($VIPIt$) ao município $j$ (calculado com base nos valores definidos na portaria de IPI), e divide este valor pelo Valor Total de IPI Líquido ($TIPI$) do mês $m$. Como em geral, as portarias de IPI vem com apenas um mês de valores brutos, podemos ignorar os subscritos $m$ da equação 1, e considerarmos a equação 2.
+
+Equação 1:
+$$VIPIt_{jm} \times 100/TIPI_m = Ip_{jm}$$
+
+Equação 2:
+$$VIPIt_{j} \times 100/TIPI = Ip_{j}$$
+
+## Função `ajuste()`
+
+A função `ajuste()`, irá pegar os novos índices de participação final calculados pela função `calc_novos_indices()`, e irá recalcular os índices de participação dos municípios para cada critério, se baseando nos novos índices de participação final calculados por `calc_novos_indices()`.
+
+Para ajustar os índices de participação dos municípios em cada critério, a função segue a fórmula abaixo. Considerando os seguintes parâmetros: o índice de participação final definidos no Idx ($IpIdx$) para o município $j$, no mês $m$; o índice de participação ($Ipc$) do critério $i$ para o município $j$, definido no Idx de mês $m$; e o novo índice de participação final ($Ip$) para cada município $j$ e mês $m$, calculado por `calc_novos_indices()`. A seguinte transformação sobre os índices de cada critério será feita por `ajuste()`:
+
+
+$$Ipc_{ijm} \times Ip_{jm}/IpIdx_{jm}$$
+
+Portanto, a intenção por trás das funções `calc_novos_indices()` e `ajuste()`, é recalcular todo o Idx para os meses que necessitarem deste ajuste, se baseando no critério de que algum município tenha recebido $0 reais, em algum mês de transferências brutas da portaria de ICMS. Após recalcular o Idx para os meses que necessitarem de tal ajuste, a função `calc_ICMS()` será novamente aplicada sobre estes Idx's que foram recalculados, de forma a calcular novamente os valores brutos transferidos para cada município, segundo cada critério.
+
+No método alternativo de cálculo, as funções `calc_novos_indices()` e `ajuste()` serão aplicadas sobre todos os Idx's. Ou seja, essas funções vão reconstruir os Idx's de todos os meses envolvidos na portaria de ICMS e IPI. Independentemente se no mês $m$ houve algum município que tenha recebido $0 reais de ICMS ou de IPI.
+
+
+
+# Método alternativo de cálculo
+
+O método alternativo de cálculo, conciste em aplicar as funções `calc_novos_indices()` e `ajuste()` sobre os Idx's de todos os meses envolvidos na portaria de ICMS e IPI. Em outras palavras, todos os Idx's são recalculados, com base nos índices de participação utilizados pela SEF, que são calculados com base nas portarias de ICMS e IPI.
+
+
+Esse é o método mais preciso de cálculo das transferências, pois estamos utilizando os índices de participação que a SEF de fato utilizou nas portarias de ICMS e IPI, para calcularmos os valores transferidos. Apesar de ser o mais preciso, o método principal de cálculo já é suficiente para aproximar o suficiente dos valores transferidos na maioria dos casos.
+
+Este método é aplicado, sempre que o valor total calculado pelo método principal de pelo menos um município, divergir (em termos absolutos) em mais de $2 reais do valor total calculado com base nas portarias de ICMS e IPI.
+
+
+Portanto, o que este método faz, é aplicar as funções `calc_novos_indices()` e `ajuste()` sobre os Idx's de todos os meses. Em seguida, as funções `calc_ICMS()` e `calc_IPI()` são reaplicadas sobre estes novos valores ajustados, para calcularem os valores de ICMS e IPI, agora considerando-se estes novos ajustes. 
+
+Após esses passos, o método alternativo segue exatamente a mesma linha do método principal de cálculo. Ou seja, ele irá somar os valores brutos de ICMS calculados de cada mês, de forma a construir uma única planilha, contendo os valores brutos totais de ICMS para cada município, segundo cada critério. Em seguida, são retirados 80% desses valores para se chegar aos valores líquidos totais para cada município, segundo cada critério.
+
+Por fim, esses valores líquidos de ICMS são somados aos valores líquidos de IPI, chegando aos valores finais do cálculo.
+
+
+
+
+
+
+
+
+
+
+

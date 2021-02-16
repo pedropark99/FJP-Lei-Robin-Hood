@@ -28,7 +28,19 @@ idx_formatado <- idx_formatado %>%
     codigos_site,
     by = c("Critério" = "Variavel")
   ) %>% 
-  select(Ano, `Mês`, IBGE2, `Cód índ`, Valor, `Critério`)
+  select(Ano, `Mês`, IBGE2, `Cód índ`, Valor)
+
+
+meses <-  1:12
+names(meses) <- c("Janeiro", "Fevereiro", "Março", "Abril", 
+                  "Maio", "Junho", "Julho", "Agosto", "Setembro",
+                  "Outubro", "Novembro", "Dezembro")
+
+
+idx_formatado$Mês <- unname(meses[idx_formatado$Mês])
+
+
+colnames(idx_formatado) <- c("ano",	"mês", "Cod", "Cód índ", "Valor índ") 
 
 
 write.csv2(idx_formatado, "Idx_para_site.csv", row.names = F)
