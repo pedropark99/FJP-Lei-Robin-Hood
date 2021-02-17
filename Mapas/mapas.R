@@ -101,7 +101,7 @@ montar_legendas <- function(x) {
 
 
 
-## Para fins de deixar o script mais claro
+## Com o objetivo de deixar o script mais claro,
 ## a função abaixo busca unir os dados de transferência
 ## selecionados à tabela que contém os dados espaciais
 ## a serem plotados no mapa.
@@ -215,7 +215,7 @@ fonte_dados <- "Fonte: Diretoria de Estatística e Informações - DIREI/FJP."
 
 
 
-## A função abaixo, é a responsável por gerar o mapa em si
+## A função abaixo, é a responsável por gerar o mapa em si.
 ## Ela primeiro, aplica a função dados_necessarios(), para
 ## coletar os dados a serem utilizados no mapa. Em seguida,
 ## a função busca definir qual o título a ser utilizado na
