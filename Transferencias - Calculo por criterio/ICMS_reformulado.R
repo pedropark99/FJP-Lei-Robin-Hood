@@ -3,6 +3,7 @@ library(tidyverse)
 library(readxl)
 
 
+setwd("C:/Users/pedro.duarte/Documents/FJP-Lei-Robin-Hood/Transferencias - Calculo por criterio/")
 
 
 
@@ -558,6 +559,24 @@ rm(lista)
 
 #### Somando os valores líquidos de ICMS e IPI -------------------------------------
 
+
+truncar_valores <- function(x){
+  como_texto <- as.character(x)
+  posicao <- str_locate(como_texto, "[.]")[, "start"]
+  final <- posicao + 2
+  valores <- str_sub(como_texto, 1, final)
+  valores <- as.double(valores)
+  valores[is.na(valores)] <- 0
+  return(valores)
+}
+
+
+lista_completa_colunas <- c(
+  colunas,
+  "Compensações",
+  "Valor Líquido + Compensações"
+)
+
 ICMS_IPI_Liq <- ICMS_Liq[colunas] + IPI_Liq[colunas]
 
 ICMS_IPI_Liq$IBGE2 <- sort(lista_idx[[1]][["IBGE2"]])
@@ -574,13 +593,23 @@ ICMS_IPI_Liq <- ICMS_IPI_Liq %>%
   as_tibble()
 
 
+ICMS_IPI_Liq_arredondado <- ICMS_IPI_Liq %>%
+  mutate(
+    across(all_of(lista_completa_colunas), round, 2)
+  )
+
+ICMS_IPI_Liq_truncado <- ICMS_IPI_Liq %>%
+  mutate(
+    across(all_of(lista_completa_colunas), truncar_valores)
+  )
 
 
 
 #### Exportando os resultados finais
 
 write.csv2(ICMS_IPI_Liq, "Resultado_final.csv", row.names = F)
-
+write.csv2(ICMS_IPI_Liq_arredondado, "Resultado_final_arredondado.csv", row.names = F, )
+write.csv2(ICMS_IPI_Liq_truncado, "Resultado_final_truncado.csv", row.names = F)
 
 
 
@@ -816,12 +845,21 @@ ICMS_IPI_Liq <- ICMS_IPI_Liq %>%
 
 
 
+ICMS_IPI_Liq_arredondado <- ICMS_IPI_Liq %>%
+  mutate(
+    across(all_of(lista_completa_colunas), round, 2)
+  )
 
+ICMS_IPI_Liq_truncado <- ICMS_IPI_Liq %>%
+  mutate(
+    across(all_of(lista_completa_colunas), truncar_valores)
+  )
 
 
 #### Exportando os resultados finais
 
 write.csv2(ICMS_IPI_Liq, "Resultado_final.csv", row.names = F)
-
+write.csv2(ICMS_IPI_Liq_arredondado, "Resultado_final_arredondado.csv", row.names = F)
+write.csv2(ICMS_IPI_Liq_truncado, "Resultado_final_truncado.csv", row.names = F)
 
 
